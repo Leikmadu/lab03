@@ -1,130 +1,421 @@
-# Laboratory work II
+# Laboratory work III
 
-Данная лабораторная работа посвещена изучению систем контроля версий на примере Git.
+Данная лабораторная работа посвещена изучению систем автоматизации сборки проекта на примере CMake
 ```bash
-$ open https://git-scm.com
+$ open https://cmake.org/
 ```
 
 ## Tasks
-- 1. Создать публичный репозиторий с названием lab02 и с лиценцией MIT
-- 2. Сгенирировать токен для доступа к сервису GitHub с правами repo
-- 3. Ознакомиться со ссылками учебного материала
-- 4. Выполнить инструкцию учебного материала
-- 5. Составить отчет и отправить ссылку личным сообщением в Slack
+- 1. Создать публичный репозиторий с названием lab03 на сервисе GitHub
+- 2. Ознакомиться со ссылками учебного материала
+- 3. Выполнить инструкцию учебного материала
+- 4. Составить отчет и отправить ссылку личным сообщением в Slack
 
 ## Студент
 Малыхин Кирилл Группа: ИУ8-21  
-Дата: 20.03.2026  
+Дата: 04.04.2026  
 
 ---
 
 ## Tutorial
 ```bash
 $ export GITHUB_USERNAME=<имя_пользователя>
-$ export GITHUB_EMAIL=<адрес_почтового_ящика>
-$ export GITHUB_TOKEN=<сгенирированный_токен>
-$ alias edit=<nano|vi|vim|subl>
-```
-```bash
 $ cd ${GITHUB_USERNAME}/workspace
+$ pushd .
+```
+**Вывод**
+```
+~/Desktop/Leikmadur/workspace ~/Desktop/Leikmadur/workspace
+```
+
+```bash
 $ source scripts/activate
 ```
 
 ```bash
-$ mkdir ~/.config
-$ cat > ~/.config/hub <<EOF
-github.com:
-- user: ${GITHUB_USERNAME}
-  oauth_token: ${GITHUB_TOKEN}
-  protocol: https
-EOF
-$ git config --global hub.protocol https
+$ git clone https://github.com/${GITHUB_USERNAME}/lab02.git projects/lab03
+```
+**Вывод**
+```
+Cloning into 'projects/lab03'...
+remote: Enumerating objects: 56, done.
+remote: Counting objects: 100% (56/56), done.
+remote: Compressing objects: 100% (44/44), done.
+remote: Total 56 (delta 13), reused 40 (delta 6), pack-reused 0 (from 0)
+Receiving objects: 100% (56/56), 14.41 KiB | 421.00 KiB/s, done.
+Resolving deltas: 100% (13/13), done.
+```
 
 ```bash
-$ mkdir projects/lab02 && cd projects/lab02
-$ git init
-$ git config --global user.name ${GITHUB_USERNAME}
-$ git config --global user.email ${GITHUB_EMAIL}
-# check your git global settings
-$ git config -e --global
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab02.git
-$ git pull origin master
-$ touch README.md
-$ git status
-$ git add README.md
-$ git commit -m"added README.md"
-$ git push origin master
+$ cd projects/lab03
+$ git remote remove origin
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab03.git
 ```
-Добавить на сервисе GitHub в репозитории lab02 файл .gitignore со следующем содержимом:
 
 ```bash
-*build*/
-*install*/
-*.swp
-.idea/
+$ g++ -std=c++11 -I./include -c sources/print.cpp
+$ ls print.o
 ```
+
 ```bash
 $ git pull origin master
 $ git log
 ```
+**Вывод**
+```
+print.o
+```
+
 ```bash
-$ mkdir sources
-$ mkdir include
-$ mkdir examples
-$ cat > sources/print.cpp <<EOF
-#include <print.hpp>
+$ nm print.o | grep print
+```
+**Вывод**
+```
+0000000000000000 T _Z5printRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERSo
+000000000000002a T _Z5printRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERSt14basic_ofstreamIcS2_E
+```
 
-void print(const std::string& text, std::ostream& out)
-{
-  out << text;
-}
 
-void print(const std::string& text, std::ofstream& out)
-{
-  out << text;
-}
+```bash
+$ ar rvs print.a print.o
+```
+**Вывод**
+```
+ar: creating print.a
+a - print.o
+```
+
+```bash
+$ file print.a
+```
+
+**Вывод**
+```
+print.a: current ar archive
+```
+
+```bash 
+$ g++ -std=c++11 -I./include -c examples/example1.cpp
+$ ls example1.o
+```
+**Вывод**
+```
+example1.o
+```
+
+```bash
+$ g++ example1.o print.a -o example1
+$ ./example1 && echo
+```
+**Вывод**
+```
+hello
+```
+
+```bash
+$ g++ -std=c++11 -I./include -c examples/example2.cpp
+$ nm example2.o
+```
+
+**Вывод**
+```
+0000000000000000 V DW.ref.__gxx_personality_v0
+                 U __gxx_personality_v0
+0000000000000000 T main
+                 U __stack_chk_fail
+                 U _Unwind_Resume
+                 U _Z5printRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERSt14basic_ofstreamIcS2_E
+                 U _ZNSt14basic_ofstreamIcSt11char_traitsIcEEC1EPKcSt13_Ios_Openmode
+                 U _ZNSt14basic_ofstreamIcSt11char_traitsIcEED1Ev
+0000000000000000 W _ZNSt15__new_allocatorIcED1Ev
+0000000000000000 W _ZNSt15__new_allocatorIcED2Ev
+0000000000000000 n _ZNSt15__new_allocatorIcED5Ev
+                 U _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1EPKcRKS3_
+                 U _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEED1Ev
+                 U _ZSt21ios_base_library_initv
+0000000000000000 r _ZStL19piecewise_construct
+```
+
+```bash
+$ g++ example2.o print.a -o example2
+$ ./example2
+```
+
+```bash
+$ cat log.txt && echo
+```
+
+**Вывод**
+```
+hello
+```
+
+```bash
+$ rm -rf example1.o example2.o print.o
+$ rm -rf print.a
+$ rm -rf example1 example2
+$ rm -rf log.txt
+```
+
+```bash
+$ cat > CMakeLists.txt <<EOF
+
+cmake_minimum_required(VERSION 3.10)
+project(print)
 EOF
 ```
 
 ```bash
-$ cat > include/print.hpp <<EOF
-#include <fstream>
-#include <iostream>
-#include <string>
+$ cat >> CMakeLists.txt <<EOF
 
-void print(const std::string& text, std::ofstream& out);
-void print(const std::string& text, std::ostream& out = std::cout);
+add_library(print STATIC \${CMAKE_CURRENT_SOURCE_DIR}/sources/print.cpp)
 EOF
 ```
+
 ```bash
-$ cat > examples/example2.cpp <<EOF
-#include <print.hpp>
+$ cat >> CMakeLists.txt <<EOF
 
-#include <fstream>
-
-int main(int argc, char** argv)
-{
-  std::ofstream file("log.txt");
-  print(std::string("hello"), file);
-}
+include_directories(\${CMAKE_CURRENT_SOURCE_DIR}/include)
 EOF
 ```
+
 ```bash
-$ edit README.md
+$ cat >> CMakeLists.txt <<EOF
+
+include_directories(\${CMAKE_CURRENT_SOURCE_DIR}/include)
+EOF
 ```
 
 ```bash
-$ git status
-$ git add .
-$ git commit -m"added sources"
-$ git push origin master
+$ cmake -H. -B_build
 ```
+**Вывод**
+```
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_build
+```
+
+```bash
+$ cmake --build _build
+```
+**Вывод**
+```
+[ 50%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
+[100%] Linking CXX static library libprint.a
+[100%] Built target print
+```
+
+```bash
+$ cat >> CMakeLists.txt <<EOF
+
+add_executable(example1 \${CMAKE_CURRENT_SOURCE_DIR}/examples/example1.cpp)
+add_executable(example2 \${CMAKE_CURRENT_SOURCE_DIR}/examples/example2.cpp)
+EOF
+```
+
+```bash
+$ cat >> CMakeLists.txt <<EOF
+
+target_link_libraries(example1 print)
+target_link_libraries(example2 print)
+EOF
+```
+
+```bash
+$ cmake --build _build
+```
+**Вывод**
+```
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_build
+[ 33%] Built target print
+[ 50%] Building CXX object CMakeFiles/example1.dir/examples/example1.cpp.o
+[ 66%] Linking CXX executable example1
+[ 66%] Built target example1
+[ 83%] Building CXX object CMakeFiles/example2.dir/examples/example2.cpp.o
+[100%] Linking CXX executable example2
+[100%] Built target example2
+```
+
+```bash
+$ cmake --build _build --target print
+```
+**Вывод**
+```
+[100%] Built target print
+```
+
+```bash
+$ cmake --build _build --target example1
+```
+**Вывод**
+```
+[ 50%] Built target print
+[100%] Built target example1
+```
+
+```bash
+$ cmake --build _build --target example2
+```
+
+**Вывод**
+```
+[ 50%] Built target print
+[100%] Built target example2
+```
+
+```bash
+$ ls -la _build/libprint.a
+```
+
+**Вывод**
+```
+-rw-rw-r-- 1 kirill kirill 2246 Mar 30 22:44 _build/libprint.a
+```
+
+```bash
+$ _build/example1 && echo
+```
+
+**Вывод**
+```
+hello
+```
+
+```bash
+$ _build/example2
+$ cat log.txt && echo
+```
+
+**Вывод**
+```
+hello
+```
+
+```bash
+$ rm -rf log.txt
+$ git clone https://github.com/tp-labs/lab03 tmp
+```
+**Вывод**
+```
+Cloning into tmp
+remote: Enumerating objects: 91, done.
+remote: Counting objects: 100% (30/30), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 91 (delta 13), reused 21 (delta 21), pack-reused 61 (from 1)
+Receiving objects: 100% (91/91), 14.41 KiB | 421.00 KiB/s, done.
+Resolving deltas: 100% (41/41), done.
+```
+
+
+```bash
+$ mv -f tmp/CMakeLists.txt .
+$ rm -rf tmp
+```
+
+```bash
+$ cat CMakeLists.txt
+```
+
+**Вывод**
+```
+cmake_minimum_required(VERSION 3.4)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(BUILD_EXAMPLES "Build examples" OFF)
+
+project(print)
+
+add_library(print STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/print.cpp)
+
+target_include_directories(print PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+if(BUILD_EXAMPLES)
+  file(GLOB EXAMPLE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
+  foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+    get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
+    add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+    target_link_libraries(${EXAMPLE_NAME} print)
+    install(TARGETS ${EXAMPLE_NAME}
+      RUNTIME DESTINATION bin
+    )
+  endforeach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+endif()
+
+install(TARGETS print
+    EXPORT print-config
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
+install(EXPORT print-config DESTINATION cmake)
+```
+
+```bash
+$ cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install
+```
+**Вывод**
+```
+[100%] Built target print
+Install the project...
+-- Install configuration: ""
+-- Installing: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_install/lib/libprint.a
+-- Installing: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_install/include
+-- Installing: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_install/include/print.hpp
+-- Installing: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_install/cmake/print-config.cmake
+-- Installing: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/_install/cmake/print-config-noconfig.cmake
+```
+
+```bash
+$ sudo snap install tree
+```
+**Вывод**
+```
+[sudo] password for kirill: 
+tree 2.1.3+pkg-5852 from 林博仁 Buo-ren Lin (brlin) installed
+```
+
+```bash
+$ git add CMakeLists.txt
+$ git commit -m"added CMakeLists.txt"
+```
+**Вывод**
+```
+[main 7378b9c] added CMakeLists.txt
+ 1 file changed, 36 insertions(+)
+ create mode 100644 CMakeLists.txt
+```
+
+```bash
+$ git push origin main
+```
+
 ##Report
 
 ```bash
-$ cd ~/workspace/
-$ export LAB_NUMBER=02
-$ git clone https://github.com/tp-labs/lab${LAB_NUMBER}.git tasks/lab${LAB_NUMBER}
+$ popd
+$ export LAB_NUMBER=03
+$ git clone https://github.com/tp-labs/lab${LAB_NUMBER} tasks/lab${LAB_NUMBER}
 $ mkdir reports/lab${LAB_NUMBER}
 $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
 $ cd reports/lab${LAB_NUMBER}
@@ -133,329 +424,317 @@ $ gist REPORT.md
 ```
 
 
-## Выполнение домашнего задания
+## Homework
 
-### Part I
+Представьте, что вы стажер в компании "Formatter Inc.".
 
-1. Создайте пустой репозиторий на сервисе github.com (или gitlab.com, или bitbucket.com).
+### Задание 1
 
-Создан репозиторий lab02.
-2. Выполните инструкцию по созданию первого коммита на странице репозитория, созданного на предыдещем шаге.
+#### Вам поручили перейти на систему автоматизированной сборки CMake. Исходные файлы находятся в директории formatter_lib. В этой директории находятся файлы для статической библиотеки formatter. Создайте CMakeList.txt в директории formatter_lib, с помощью которого можно будет собирать статическую библиотеку formatter.
 
-Первый коммит создан.
-
-3. Создайте файл hello_world.cpp в локальной копии репозитория (который должен был появиться на шаге 2). Реализуйте программу Hello world на языке C++ используя плохой стиль кода. Например, после заголовочных файлов вставьте строку using namespace std;.
+- 1. Создаем папку formatter_lib:
 
 ```bash
-$ cat > hello_world.cpp <<'EOF'
+$ mkdir formatter_lib
 ```
-4. Добавьте этот файл в локальную копию репозитория.
+
+- 2. В этой папке cоздаем CMakeLists.txt с этим текстом
+
+```
+cmake_minimum_required(VERSION 3.10)
+project(formatter)
+
+add_library(formatter STATIC formatter.cpp)
+
+target_include_directories(formatter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+```
+- 3. Создаем formatter.cpp:
+
 ```bash
-git add hello_world.cpp
+#include "formatter.h"
+
+std::string formatter(const std::string& message)
+{
+    std::string res;
+    res += "-------------------------\n";
+    res += message + "\n";
+    res += "-------------------------\n";
+    return res;
+}
 ```
-5. Закоммитьте изменения с осмысленным сообщением.
+- 4. Создаем formatter.h:
 ```bash
-git commit -m "add hello_world.cpp with bad style"
-```
-**Вывод:**
-```
-[main (root-commit) 287ecfa] add hello_world.cpp with bad style
- 1 file changed, 8 insertions(+)
- create mode 100644 hello_world.cpp
-```
-6. Изменитьте исходный код так, чтобы программа через стандартный поток ввода запрашивалось имя пользователя. А в стандартный поток вывода печаталось сообщение Hello world from @name, где @name имя пользователя.
-```bash
-cat > hello_world.cpp <<'EOF'
-```
-**Теперь программа выглядит так**:
-```
-#include <iostream>
+#pragma once
+
 #include <string>
-using namespace std;
 
-int main() {
-    string name;
-    cout << "Enter your name: ";
-    getline(cin, name);
-    cout << "Hello world from " << name << endl;
+std::string formatter(const std::string& message);
+```
+
+
+### Задание 2
+
+#### У компании "Formatter Inc." есть перспективная библиотека, которая является расширением предыдущей библиотеки. Т.к. вы уже овладели навыком созданием CMakeList.txt для статической библиотеки formatter, ваш руководитель поручает заняться созданием CMakeList.txt для библиотеки formatter_ex, которая в свою очередь использует библиотеку formatter.
+
+- 1. Создаем папку formatter_ex.
+
+```bash
+$ mkdir formatter_ex
+```
+
+- 2. В этой папке cоздаем CMakeLists.txt с этим текстом
+
+```bash
+cmake_minimum_required(VERSION 3.10)
+project(formatter_ex)
+
+add_library(formatter_ex STATIC formatter_ex.cpp)
+
+target_include_directories(formatter_ex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(formatter_ex formatter)
+```
+
+- 3. Создаем файл formatter_ex.cpp:
+
+```bash
+#include "formatter_ex.h"
+
+#include "formatter.h"
+
+std::ostream& formatter(std::ostream& out, const std::string& message)
+{
+    return out << formatter(message);
+}
+```
+
+- 4. Создаем файл formatter_ex.h.
+
+```bash
+#pragma once
+
+#include <string>
+#include <iostream>
+
+std::ostream& formatter(std::ostream& out, const std::string& message);
+```
+
+
+### Задание 3
+
+#### Note: Конечно же ваша компания предоставляет примеры использования своих библиотек. Чтобы продемонстрировать как работать с библиотекой formatter_ex, вам необходимо создать два CMakeList.txt для двух простых приложений: hello_world, которое использует библиотеку formatter_ex; solver, приложение которое испольует статические библиотеки formatter_ex и solver_lib.
+
+
+- 1. Cоздаем папку hello_world:
+```bash
+$ mkdir hello_world
+```
+
+- 2. В этой папке cоздаем CMakeLists.txt с этим текстом
+```bash
+cmake_minimum_required(VERSION 3.10)
+project(hello_world)
+
+add_executable(hello_world main.cpp)
+
+target_link_libraries(hello_world formatter_ex)
+```
+- 3. Создаем файл  hello_world.cpp:
+
+```bash
+#include <iostream>
+
+#include "formatter_ex.h"
+
+int main()
+{
+    formatter(std::cout, "hello, world!");
+}
+```
+
+- 4. Cоздаем папку solver:
+```bash
+$ mkdir solver
+```
+
+- 5. В этой папке cоздаем CMakeLists.txt с этим текстом
+
+```bash
+cmake_minimum_required(VERSION 3.4)
+project(solver)
+
+add_executable(solver main.cpp)
+
+target_link_libraries(solver formatter_ex solver_lib)
+```
+
+- 6. Создаем файл  equation.cpp:
+```bash
+#include <iostream>
+
+#include "formatter_ex.h"
+#include "solver.h"
+
+int main()
+{
+    float a = 0;
+    float b = 0;
+    float c = 0;
+
+    std::cin >> a >> b >> c;
+
+    float x1 = 0;
+    float x2 = 0;
+
+    try
+    {
+        solve(a, b, c, x1, x2);
+
+        formatter(std::cout, "x1 = " + std::to_string(x1));
+        formatter(std::cout, "x2 = " + std::to_string(x2));
+    }
+    catch (const std::logic_error& ex)
+    {
+        formatter(std::cout, ex.what());
+    }
+
     return 0;
 }
 ```
-7. Закоммитьте новую версию программы. Почему не надо добавлять файл повторно git add?
+
+- 7. Cоздаем папку solver_lib:
 ```bash
-git commit -am "modify hello_world.cpp"
+$ mkdir solver_lib
 ```
-**Вывод:**
-```
-[main 1d6a635] modify hello_world.cpp
- 1 file changed, 4 insertions(+), 1 deletion(-)`
-```
-Git уже отслеживает все файлы и добавляет их автоматически.
 
-8. Запуште изменения в удалёный репозиторий.
+- 8. В этой папке cоздаем CMakeLists.txt с этим текстом:
+
 ```bash
- git push origin main
+cmake_minimum_required(VERSION 3.10)
+project(solver_lib)
+
+add_library(solver_lib STATIC solver.cpp)
+
+target_include_directories(solver_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 ```
-**Вывод:**
-```
-Enumerating objects: 7, done.
-Counting objects: 100% (7/7), done.
-Delta compression using up to 2 threads
-Compressing objects: 100% (6/6), done.
-Writing objects: 100% (6/6), 823 bytes | 823.00 KiB/s, done.
-Total 6 (delta 0), reused 0 (delta 0), pack-reused 0
-To https://github.com/Leikmadu/lab02.git
-   61e72c7..446f8ca  main -> main
-```
-9. Проверьте, что история коммитов доступна в удалёный репозитории.
 
-Доступна
-
-
-## Part II
-Note: Работать продолжайте с теми же репоззиториями, что и в первой части задания.
-
-1. В локальной копии репозитория создайте локальную ветку patch1.
+- 9. Создаем файл solver.cpp:
 ```bash
-git checkout -b patch1
-```
+#include "solver.h"
+#include <cmath>
+#include <stdexcept>
 
-**Вывод:**
-```
-Switched to a new branch 'patch1'
-```
-2. Внесите изменения в ветке patch1 по исправлению кода и избавления от using namespace std;.
-```bash
-cat > hello_world.cpp <<'EOF'
-```
-Теперь код выглядит так:
-```
-`#include <string>
+void solve(float a, float b, float c, float& x1, float& x2)
+{
+    float d = (b * b) - (4 * a * c);
 
-int main() {
-    std::string name;
-    std::cout << "Enter your name: ";
-    std::getline(std::cin, name);
-    std::cout << "Hello world from " << name << std::endl;
-    return 0;
-}
-EOF
-```
-3. commit, push локальную ветку в удалённый репозиторий.
-```bash
-git commit -am "fix: remove 'using namespace std'"
-```
-**Вывод:**
-```
-[patch1 9f4a364] fix: remove 'using namespace std'
- 1 file changed, 4 insertions(+), 5 deletions(-)
-```
-4. Проверьте, что ветка patch1 доступна в удалёный репозитории.
+    if (d < 0)
+    {
+        throw std::logic_error{"error: discriminant < 0"};
+    }
 
-На Github  patch1 присутствует.
-
-5. Создайте pull-request patch1 -> master.
-
-Pull-request создан.
-
-6. В локальной копии в ветке patch1 добавьте в исходный код комментарии.
-```bash
-cat > hello_world.cpp <<'EOF'
-```
-Теперь код такой:
-```
-#include <iostream>  // for std::cout and cin                                   #include <string>    // for std::string
-/**
- * main function             
- */                                                  
-int main() {
-    std::string name;                      // name
-    std::cout << "Enter your name: ";      // enter the name                   
-    std::getline(std::cin, name);          // reading name     
-    std::cout << "Hello world from " << name << std::endl;  // print    
-    return 0;                              //ending      
+    x1 = (-b - std::sqrt(d)) / (2 * a);
+    x2 = (-b + std::sqrt(d)) / (2 * a);
 }
 ```
-7. commit, push.
-```bash
-git commit -am "add comments"
-```
-**Вывод:**
-```
-[patch1 0ca7445] add comments
- 1 file changed, 13 insertions(+), 10 deletions(-)
-```
-```bash
-git push origin patch1
-```
-**Вывод:**
-```
-Enumerating objects: 5, done.
-Counting objects: 100% (5/5), done.
-Delta compression using up to 2 threads
-Compressing objects: 100% (3/3), done.
-Writing objects: 100% (3/3), 508 bytes | 508.00 KiB/s, done.
-Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
-To https://github.com/Leikmadu/lab02.git
-   9f4a364..0ca7445  patch1 -> patch1
-```
-8. Проверьте, что новые изменения есть в созданном на шаге 5 pull-request
-Все изменения есть.
 
-9. В удалённый репозитории выполните слияние PR patch1 -> master и удалите ветку patch1 в удаленном репозитории.
-
-Слияние выполнено.
+- 10. Создаем файл solver.h:
 
 ```bash
-git checkout main
+void solve(float a, float b, float c, float& x1, float& x2);
 ```
-**Вывод:**
-```
-Switched to branch 'main'
-Your branch is up to date with 'origin/main'.
-```
-10. Локально выполните pull.
+- 11. Cоздаем главный CMakeLists.txt в основной папке lab03 с этим текстом:
 
 ```bash
-git pull origin main
+cmake_minimum_required(VERSION 3.10)
+project(lab03)
+
+add_subdirectory(formatter_lib)
+add_subdirectory(formatter_ex)
+add_subdirectory(solver_lib)
+add_subdirectory(hello_world)
+add_subdirectory(solver)
 ```
-**Вывод:**
-```
-remote: Enumerating objects: 1, done.
-remote: Counting objects: 100% (1/1), done.
-remote: Total 1 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-Unpacking objects: 100% (1/1), 964 bytes | 964.00 KiB/s, done.
-From https://github.com/Leikmadu/lab02
- * branch            main       -> FETCH_HEAD
-   446f8ca..976ce26  main       -> origin/main
-Updating 446f8ca..976ce26
-Fast-forward
- hello_world.cpp | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
-```
-11. С помощью команды git log просмотрите историю в локальной версии ветки master.
+
+- 12. Cобираем проект в корнe папки lab03:
 
 ```bash
-git log
-```
-**Вывод:**
-
-```
-976ce26 (HEAD -> main, origin/main) Merge pull request #1 from Leikmadu/patch1
-0ca7445 (origin/patch1, patch1) add comments
-9f4a364 fix: remove 'using namespace std'
-446f8ca modify hello_world.cpp
-ade8536 add hello_world.cpp with bad style
-61e72c7 first commit
-```
-12. Удалите локальную ветку patch1.
-```bash
-git branch -d patch1
-```
-**Вывод:**
-
-```
-Deleted branch patch1 (was 0ca7445).
+$ cmake -H. -B build
 ```
 
-### Part III
-Note: Работать продолжайте с теми же репоззиториями, что и в первой части задания.
+**Вывод**
 
-1. Создайте новую локальную ветку patch2.
-```bash
-git checkout -b patch2
 ```
-**Вывод:**
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/kirill/Desktop/Leikmadur/workspace/projects/lab03/build
 ```
-Switched to a new branch 'patch2'
-```
-2. Измените code style с помощью утилиты clang-format. Например, используя опцию -style=Mozilla.
 
 ```bash
-clang-format -style=Mozilla -i hello_world.cpp
+$ cmake --build build
 ```
-3. commit, push, создайте pull-request patch2 -> master.
+
+**Вывод**
+```
+[ 20%] Built target formatter
+[ 30%] Building CXX object formatter_ex/CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o
+[ 40%] Linking CXX static library libformatter_ex.a
+[ 40%] Built target formatter_ex
+[ 50%] Building CXX object solver_lib/CMakeFiles/solver_lib.dir/solver.cpp.o
+[ 60%] Linking CXX static library libsolver_lib.a
+[ 60%] Built target solver_lib
+[ 70%] Building CXX object hello_world/CMakeFiles/hello_world.dir/hello_world.cpp.o
+[ 80%] Linking CXX executable hello_world
+[ 80%] Built target hello_world
+[ 90%] Building CXX object solver/CMakeFiles/solver.dir/equation.cpp.o
+[100%] Linking CXX executable solver
+[100%] Built target solver
+```
+
+- 13. Запускеам проекты:
 
 ```bash
-git commit -am "format code with Mozilla style"
+$ ./build/hello_world/hello_world
 ```
-**Вывод:**
-```
-Switched to a new branch 'patch2'
-```
-```bash
-git push -u origin patch2
-```
-**Вывод:**
-```
-Enumerating objects: 5, done.
-Counting objects: 100% (5/5), done.
-Delta compression using up to 2 threads
-Compressing objects: 100% (3/3), done.
-Writing objects: 100% (3/3), 519 bytes | 519.00 KiB/s, done.
-Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
-remote: 
-remote: Create a pull request for 'patch2' on GitHub by visiting:
-remote:      https://github.com/Leikmadu/lab02/pull/new/patch2
-remote: 
-To https://github.com/Leikmadu/lab02.git
- * [new branch]      patch2 -> patch2
-branch 'patch2' set up to track 'origin/patch2'.
-```
-4. В ветке master в удаленном репозитории измените комментарии, например, расставьте знаки препинания, переведите комментарии на другой язык.
 
-Изменены комментарии.
-
-5. Убедитесь, что в pull-request появились конфликтны.
-
-Конфикты появились, теперь нельзя произвести merge.
-
-6. Для этого локально выполните pull + rebase (точную последовательность команд, следует узнать самостоятельно). Исправьте конфликты.
+**Вывод**
+```
+-------------------------
+hello, world!
+-------------------------
+```
 
 ```bash
-git pull origin main --rebase
+$ ./build/solver/solver
 ```
-**Вывод:**
-```
-error: Pulling is not possible because you have unmerged files.
-hint: Fix them up in the work tree, and then use 'git add/rm <file>'
-hint: as appropriate to mark resolution and make a commit.
-fatal: Exiting because of an unresolved conflict.
 
+**Вывод**
 ```
-7. Сделайте force push в ветку patch2
+8
+2
+-14
+-------------------------
+x1 = -1.453768
+-------------------------
+-------------------------
+x2 = 1.203768
+-------------------------
+```
 
-```bash
-git add hello_world.cpp
-git rebase --continue
-```
-**Вывод:**
-```
-[detached HEAD 86f0357] format code with Mozilla style
- 1 file changed, 18 insertions(+)
-Successfully rebased and updated refs/heads/patch2.
-```
-```bash
-git push origin patch2 --force
-```
-**Вывод:**
-```
-Enumerating objects: 5, done.
-Counting objects: 100% (5/5), done.
-Delta compression using up to 2 threads
-Compressing objects: 100% (3/3), done.
-Writing objects: 100% (3/3), 681 bytes | 681.00 KiB/s, done.
-Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
-To https://github.com/Leikmadu/lab02.git
- + f59635e...86f0357 patch2 -> patch2 (forced update)
-```
-8. Убедитеcь, что в pull-request пропали конфликтны.
 
-Все конфикты устранены удаленно через GinHub. Был возвращен прежний вид hello_world.cpp.
 
-9. Вмержите pull-request patch2 -> master.
-
-Merge сделан.
 
 
 
