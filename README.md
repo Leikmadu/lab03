@@ -58,7 +58,7 @@ $ ls print.o
 ```
 
 ```bash
-$ git pull origin master
+$ git pull origin main
 $ git log
 ```
 **Вывод**
@@ -313,15 +313,15 @@ $ git clone https://github.com/tp-labs/lab03 tmp
 **Вывод**
 ```
 Cloning into tmp
-remote: Enumerating objects: 91, done.
-remote: Counting objects: 100% (30/30), done.
-remote: Compressing objects: 100% (9/9), done.
-remote: Total 91 (delta 13), reused 21 (delta 21), pack-reused 61 (from 1)
-Receiving objects: 100% (91/91), 14.41 KiB | 421.00 KiB/s, done.
-Resolving deltas: 100% (41/41), done.
+remote Enumerating objects: 59, done.
+remote Counting objects: 100% (59/59), done.
+remote Delta compression using up to 2 threads
+remote Compressing objects: 100% (40/40), done.
+remote Total 59 (delta 14), reused 55 (delta 13), pack-reused 0
+Receiving objects: 100% (59/59), 15.13 KiB | 7.57 MiB/s, done.
+remote: Resolving deltas: 100% (14/14), done.
+
 ```
-
-
 ```bash
 $ mv -f tmp/CMakeLists.txt .
 $ rm -rf tmp
@@ -333,7 +333,7 @@ $ cat CMakeLists.txt
 
 **Вывод**
 ```
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
